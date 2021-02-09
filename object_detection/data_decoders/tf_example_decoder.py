@@ -32,6 +32,7 @@ class TfExampleDecoder(data_decoder.DataDecoder):
   def __init__(self):
     """Constructor sets keys_to_features and items_to_handlers."""
     self.keys_to_features = {
+        'image/channels': tf.FixedLenFeature((), tf.int64, 1),
         'image/encoded': tf.FixedLenFeature((), tf.string, default_value=''),
         'image/format': tf.FixedLenFeature((), tf.string, default_value='jpeg'),
         'image/filename': tf.FixedLenFeature((), tf.string, default_value=''),
@@ -53,8 +54,11 @@ class TfExampleDecoder(data_decoder.DataDecoder):
         'image/segmentation/object/class': tf.VarLenFeature(tf.int64)
     }
     self.items_to_handlers = {
-        fields.InputDataFields.image: slim_example_decoder.Image(
-            image_key='image/encoded', format_key='image/format', channels=3),
+        fields.InputDataFields.image:
+            slim_example_decoder.ItemHandlerCallback(
+              keys=['image/encoded', 'image/height', 'image/width', 'image/channels'],
+              func=self._read_image
+            )
         fields.InputDataFields.source_id: (
             slim_example_decoder.Tensor('image/source_id')),
         fields.InputDataFields.key: (
@@ -81,6 +85,15 @@ class TfExampleDecoder(data_decoder.DataDecoder):
         fields.InputDataFields.groundtruth_instance_classes: (
             slim_example_decoder.Tensor('image/segmentation/object/class')),
     }
+
+  def _read_image(self, keys_to_tensors):
+    image_encoded = keys_to_tensors['image/encoded']
+    height = keys_to_tensors['image/height']
+    width = keys_to_tensors['image/width']
+    channels = keys_to_tensors['image/channels']
+    to_shape = tf.cast(tf.stack([height, width, channels]), tf.int32)
+    image = tf.reshape(tf.decode_raw(image_encoded, tf.uint8), to_shape)
+    return image
 
   def decode(self, tf_example_string_tensor):
     """Decodes serialized tensorflow example and returns a tensor dictionary.

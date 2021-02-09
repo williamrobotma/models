@@ -118,6 +118,8 @@ message FasterRcnn {
 
   // If not left to default, applies hard example mining.
   optional HardExampleMiner hard_example_miner = 27;
+
+  optional uint32 num_input_channels = 28 [default=3];
 }
 
 

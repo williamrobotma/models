@@ -115,7 +115,7 @@ def freeze_graph_with_def_protos(
 def _image_tensor_input_placeholder():
   """Returns placeholder and input node that accepts a batch of uint8 images."""
   input_tensor = tf.placeholder(dtype=tf.uint8,
-                                shape=(None, None, None, 3),
+                                shape=(None, None, None, num_input_channels),
                                 name='image_tensor')
   return input_tensor, input_tensor
 

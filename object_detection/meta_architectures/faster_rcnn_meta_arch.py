@@ -91,6 +91,7 @@ class FasterRCNNFeatureExtractor(object):
   def __init__(self,
                is_training,
                first_stage_features_stride,
+               num_input_channels=3,
                reuse_weights=None,
                weight_decay=0.0):
     """Constructor.
@@ -104,6 +105,7 @@ class FasterRCNNFeatureExtractor(object):
     """
     self._is_training = is_training
     self._first_stage_features_stride = first_stage_features_stride
+    self._num_input_channels = num_input_channels
     self._reuse_weights = reuse_weights
     self._weight_decay = weight_decay
 

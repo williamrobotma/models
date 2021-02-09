@@ -87,3 +87,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Protos
+object_detection/protos/*_pb2.py
+
+research/

@@ -162,7 +162,7 @@ def _build_ssd_model(ssd_config, is_training):
 
 
 def _build_faster_rcnn_feature_extractor(
-    feature_extractor_config, is_training, reuse_weights=None):
+    feature_extractor_config, is_training, num_input_channels=3, reuse_weights=None):
   """Builds a faster_rcnn_meta_arch.FasterRCNNFeatureExtractor based on config.
 
   Args:
@@ -187,7 +187,7 @@ def _build_faster_rcnn_feature_extractor(
   feature_extractor_class = FASTER_RCNN_FEATURE_EXTRACTOR_CLASS_MAP[
       feature_type]
   return feature_extractor_class(
-      is_training, first_stage_features_stride, reuse_weights)
+      is_training, first_stage_features_stride, num_input_channels, reuse_weights)
 
 
 def _build_faster_rcnn_model(frcnn_config, is_training):
@@ -208,10 +208,11 @@ def _build_faster_rcnn_model(frcnn_config, is_training):
       model_class_map).
   """
   num_classes = frcnn_config.num_classes
+  num_input_channels = frcnn_config.num_input_channels
   image_resizer_fn = image_resizer_builder.build(frcnn_config.image_resizer)
 
   feature_extractor = _build_faster_rcnn_feature_extractor(
-      frcnn_config.feature_extractor, is_training)
+      frcnn_config.feature_extractor, is_training, num_input_channels)
 
   first_stage_only = frcnn_config.first_stage_only
   first_stage_anchor_generator = anchor_generator_builder.build(
